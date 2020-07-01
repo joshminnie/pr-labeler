@@ -1,16 +1,23 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import * as github from '@actions/github'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const token = core.getInput('token')
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const octokit = github.getOctokit(token, {userAgent: 'pr-labeler/v1'})
+    const context = github.context
 
-    core.setOutput('time', new Date().toTimeString())
+    if (!context.payload.issue) {
+      throw new Error('Payload received did not contain a valid issue')
+    }
+
+    const pullRequest = await octokit.pulls.get({
+      ...context.repo,
+      pull_number: context.payload.issue.number
+    })
+
+    console.log(pullRequest)
   } catch (error) {
     core.setFailed(error.message)
   }
