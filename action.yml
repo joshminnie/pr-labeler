@@ -1,10 +1,6 @@
 name: 'PR Labeler'
 description: 'Label a pull request based on check runs and review status'
 author: 'Josh Minnie'
-inputs:
-  myInput:
-    description: 'input description here'
-    default: 'default value if applicable'
 runs:
   using: 'node12'
   main: 'dist/index.js'
